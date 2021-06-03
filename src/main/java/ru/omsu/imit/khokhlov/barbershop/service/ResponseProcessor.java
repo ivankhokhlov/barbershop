@@ -178,11 +178,11 @@ public class ResponseProcessor {
         }
     }
 
-    public void checkRecordRequest(Integer doctorId, String speciality) {
-        if ((doctorId == null) && (speciality == null)) {
+    public void checkRecordRequest(Integer masterid, String speciality) {
+        if ((masterid == null) && (speciality == null)) {
             throw new ServerException(ErrorCodes.RECORD_TO_THE_MASTER_IS_EMPTY);
         }
-        if ((doctorId != null) && (speciality != null)) {
+        if ((masterid != null) && (speciality != null)) {
             throw new ServerException(ErrorCodes.INVALID_RECORD_TO_THE_MASTER);
         }
     }

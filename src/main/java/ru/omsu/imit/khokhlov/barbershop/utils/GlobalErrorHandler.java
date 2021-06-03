@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.omsu.imit.khokhlov.barbershop.utils.ErrorCodes;
-import ru.omsu.imit.khokhlov.barbershop.utils.ServerException;
 
 import java.util.ArrayList;
 
@@ -23,7 +21,7 @@ public class GlobalErrorHandler {
     public ValidationErrors handleValidation(MethodArgumentNotValidException exc) {
         final ValidationErrors error = new ValidationErrors();
         exc.getBindingResult().getFieldErrors().forEach(fieldError->
-            error.getAllErrors().add(fieldError.getDefaultMessage())
+            error.getAllErrors().add(new Error(ErrorCodes.VALIDATION_ERROR,fieldError.getField(),fieldError.getDefaultMessage()))
         );
         return error;
     }
@@ -45,11 +43,23 @@ public class GlobalErrorHandler {
     }
     public static class Error{
         private ErrorCodes errorCode;
+        private String field;
         private String message;
 
         public Error(ErrorCodes errorCode) {
             this.errorCode = errorCode;
-           this.message= errorCode.getMessage();
+            this.field = errorCode.getField();
+            this.message = errorCode.getMessage();
+        }
+
+        public Error(ErrorCodes errorCode, String field, String message) {
+            this.errorCode = errorCode;
+            this.field = field;
+            this.message = message;
+        }
+
+        public String getField() {
+            return field;
         }
 
         public ErrorCodes getErrorCode() {
@@ -73,13 +83,13 @@ public class GlobalErrorHandler {
     }
 
     public static class ValidationErrors {
-        private List<String> allErrors = new ArrayList<>();
+        private List<Error> allErrors = new ArrayList<>();
 
-        public List<String> getAllErrors() {
+        public List<Error> getAllErrors() {
             return allErrors;
         }
 
-        public void setAllErrors(List<String> allErrors) {
+        public void setAllErrors(List<Error> allErrors) {
             this.allErrors = allErrors;
         }
     }

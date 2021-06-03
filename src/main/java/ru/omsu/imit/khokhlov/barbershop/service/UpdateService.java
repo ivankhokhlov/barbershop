@@ -30,7 +30,7 @@ public class UpdateService extends BaseService {
         try {
             Cookie cookie = responseProcessor.getCookie(uuid);
             if (!cookie.getUser().getPassword().equals(updateAdminRequest.getOldPassword())) {
-                throw new ServerException(ErrorCodes.INVALID_PASSWORD);
+                throw new ServerException(ErrorCodes.WRONG_PASSWORD);
             }
 
             Admin newAdmin = new Admin(new User(cookie.getUser().getId(), updateAdminRequest.getFirstName(),
@@ -87,7 +87,7 @@ public class UpdateService extends BaseService {
     public ClientInfoResponse updateClient(UpdateClientRequest updateClientRequest, String uuid) {
         Cookie cookie = responseProcessor.getCookie(uuid);
         if (!cookie.getUser().getPassword().equals(updateClientRequest.getOldPassword())) {
-            throw new ServerException(ErrorCodes.INVALID_PASSWORD);
+            throw new ServerException(ErrorCodes.WRONG_PASSWORD);
         }
 
         Client newClient = new Client(new User(cookie.getUser().getId(), updateClientRequest.getFirstName(),

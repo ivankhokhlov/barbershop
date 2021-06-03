@@ -1,40 +1,43 @@
 package ru.omsu.imit.khokhlov.barbershop.utils;
 
 public enum ErrorCodes {
-    RESERVATION_IS_NOT_POSSIBLE( "All the masters are busy or such services are not provided"),
-    RESERVATION_NOT_FOUND( "Reservation not found"),
-    SPECIALIZATION_NOT_FOUND( "Specialization not found"),
-    CLIENT_NOT_FOUND("Client not found"),
-    MASTER_SPECIALIZATION_NOT_FOUND( "Master with this id not found\""),
-    USER_NOT_FOUND( "User not found"),
-    RESERVATION_IS_OCCUPIED( "Reservation is occupied"),
-    SCHEDULE_IS_OCCUPIED( "Schedule is occupied"),
-    MASTER_ID_NOT_FOUND( "Master with this id not found"),
-    USER_ALREADY_REGISTER( "User has already registered"),
-    WRONG_PASSWORD( "Password is wrong"),
-    COOKIE_NOT_FOUND( "Cookie with this UUID not found"),
-    INVALID_COOKIE( "Cookie is wrong"),
-    INVALID_JAVA_SESSION_ID( "JAVASESSIONID is wrong"),
-    ACCESS_DENIED("Not enough permissions for this operation"),
-    USER_ALREADY_LOGIN("User has already login"),
-    ALL_SCHEDULE_IS_EMPTY( "All schedule is empty"),
-    INVALID_SCHEDULE( "All schedule is full"),
-    INVALID_RECORD_TO_THE_MASTER( "MasterID and Specialization is wrong"),
-    RECORD_TO_THE_MASTER_IS_EMPTY( "MasterID and Specialization is empty"),
-    INVALID_WEEKDAY( "Day of the week meets twice"),
-    NO_SUCH_OPERATION("Such an operation is not available"),
-    INVALID_CLIENT_ID("Client id is wrong"),
-    INVALID_PASSWORD("Password is wrong"),
-    SERVICE_NOT_FOUND("Service not found"),
-    SERVICE_NOT_PROVIDED("This service is not provided")
-    ;
+    RESERVATION_IS_NOT_POSSIBLE( "masterId or specialization","All the masters are busy or such services are not provided"),
+    RESERVATION_NOT_FOUND( "receipt","Reservation with this receipt not found"),
+    SPECIALIZATION_NOT_FOUND( "specialization","Specialization not found"),
 
+    MASTER_SPECIALIZATION_NOT_FOUND( "specialization","Masters with this specialization not found\""),
+    USER_NOT_FOUND( "login","User not found"),
+    RESERVATION_IS_OCCUPIED( "timeStart","Reservation is occupied"),
+    SCHEDULE_IS_OCCUPIED( "schedule","Schedule is occupied"),
+    MASTER_ID_NOT_FOUND( "masterId","Master with this id not found"),
+    USER_ALREADY_REGISTER( "login","User has already registered"),
+    WRONG_PASSWORD( "password","Password is wrong"),
+    COOKIE_NOT_FOUND( "uuid","Cookie with this UUID not found"),
+    INVALID_COOKIE("cookie" ,"Cookie is wrong"),
+    INVALID_JAVA_SESSION_ID( "JAVASESSIONID","JAVASESSIONID is wrong"),
+    ACCESS_DENIED("user","Not enough permissions for this operation"),
+    ALL_SCHEDULE_IS_EMPTY( "weekSchedule,weekDaysSchedule","All schedule is empty"),
+    INVALID_SCHEDULE( "weekSchedule,weekDaysSchedule","All schedule is full"),
+    INVALID_RECORD_TO_THE_MASTER( "masterId or specialization","MasterID and Specialization is wrong"),
+    RECORD_TO_THE_MASTER_IS_EMPTY( "masterId or specialization","MasterID and Specialization is empty"),
+    INVALID_WEEKDAY( "weekDay","Day of the week meets twice"),
+    //NO_SUCH_OPERATION("","Such an operation is not available"),
+    INVALID_CLIENT_ID("id","Client id is wrong"),
+    SERVICE_NOT_FOUND("serviceNameRequests","Service not found"),
+    SERVICE_NOT_PROVIDED("serviceNameRequests","This service is not provided"),
+    VALIDATION_ERROR("","")
+    ;
+    private final String field;
     private final String message;
 
-    private ErrorCodes(String message) {
+    private ErrorCodes(String field,String message) {
+        this.field=field;
         this.message = message;
     }
 
+    public String getField() {
+        return field;
+    }
 
     public String getMessage() {
         return message;
