@@ -14,13 +14,13 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface ReservationMapper {
-    @Insert("INSERT INTO reservation (timeStart,timeEnd,ticket,client_id,daySchedule_id) VALUES "
-            +"(#{reservation.timeStart},#{reservation.timeEnd},#{reservation.ticket},#{reservation.client.user.id},#{reservation.daySchedule.id})")
+    @Insert("INSERT INTO reservation (timeStart,timeEnd,receipt,client_id,daySchedule_id) VALUES "
+            +"(#{reservation.timeStart},#{reservation.timeEnd},#{reservation.receipt},#{reservation.client.user.id},#{reservation.daySchedule.id})")
     @Options(useGeneratedKeys = true, keyProperty = "reservation.id")
     Integer insert(@Param("reservation") Reservation reservation);
 
 
-    @Select("SELECT id,timeStart,timeEnd,ticket,client_id,daySchedule_id FROM reservation WHERE id = #{id}")
+    @Select("SELECT id,timeStart,timeEnd,receipt,client_id,daySchedule_id FROM reservation WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "client", column = "client_id", javaType = Client.class,
@@ -31,7 +31,7 @@ public interface ReservationMapper {
                     many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ServiceMapper.getByReservation", fetchType = FetchType.LAZY)),
     })
     Reservation getById(@Param("id")int id);
-    @Select("SELECT id,timeStart,timeEnd,ticket,client_id,daySchedule_id FROM reservation WHERE daySchedule_id = #{daySchedule.id}")
+    @Select("SELECT id,timeStart,timeEnd,receipt,client_id,daySchedule_id FROM reservation WHERE daySchedule_id = #{daySchedule.id}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "client", column = "client_id", javaType = Client.class,
@@ -42,7 +42,7 @@ public interface ReservationMapper {
                     many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ServiceMapper.getByReservation", fetchType = FetchType.LAZY)),
     })
     Reservation getByDaySchedule(@Param("daySchedule")DaySchedule daySchedule);
-    @Select("SELECT id,timeStart,timeEnd,ticket,client_id,daySchedule_id FROM reservation WHERE ticket = #{ticket}")
+    @Select("SELECT id,timeStart,timeEnd,receipt,client_id,daySchedule_id FROM reservation WHERE receipt = #{receipt}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "client", column = "client_id", javaType = Client.class,
@@ -52,13 +52,26 @@ public interface ReservationMapper {
             @Result(property = "services", column = "id", javaType = List.class,
                     many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ServiceMapper.getByReservation", fetchType = FetchType.LAZY)),
     })
-    Reservation getByTicket(@Param("ticket")String ticket);
+    Reservation getByReceipt(@Param("receipt")String receipt);
     @Update("UPDATE reservation " +
             "SET client_id = #{reservation.client.user.id} " +
             "WHERE id = #{reservation.id}")
-    void updatePatient(@Param("reservation") Reservation reservation);
+    void updateClient(@Param("reservation") Reservation reservation);
+    @Select("SELECT id,timeStart,timeEnd,receipt,client_id,daySchedule_id FROM reservation WHERE dayschedule_id " +
+            "= (SELECT id FROM dayschedule WHERE curDate = #{date} " +
+            "AND master_id = #{master.user.id});")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "client", column = "client_id", javaType = Client.class,
+                    one = @One(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ClientMapper.getById", fetchType = FetchType.LAZY)),
+            @Result(property = "daySchedule", column = "daySchedule_id", javaType = DaySchedule.class,
+                    one = @One(select = "ru.omsu.imit.khokhlov.barbershop.mappers.DayScheduleMapper.getById", fetchType = FetchType.LAZY)),
+            @Result(property = "services", column = "id", javaType = List.class,
+                    many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ServiceMapper.getByReservation", fetchType = FetchType.LAZY)),
+    })
+    List<Reservation> getByDateAndMaster(@Param("date")LocalDate date,@Param("master") Master master);
 
-    @Select("SELECT id,timeStart,timeEnd,ticket,client_id,daySchedule_id FROM reservation WHERE timeStart = #{time} " +
+    @Select("SELECT id,timeStart,timeEnd,receipt,client_id,daySchedule_id FROM reservation WHERE timeStart = #{time} " +
             "AND dayschedule_id = (SELECT id FROM dayschedule WHERE curDate = #{date} " +
             "AND master_id = #{master.user.id});")
     @Results({
@@ -71,7 +84,8 @@ public interface ReservationMapper {
                     many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ServiceMapper.getByReservation", fetchType = FetchType.LAZY)),
     })
     Reservation getByDateTimeAndMaster(@Param("date")LocalDate date, @Param("time") LocalTime time, @Param("master") Master master);
-    @Select("SELECT id,timeStart,timeEnd,ticket,client_id,daySchedule_id  FROM reservation WHERE timeStart >= #{timeStart} AND timeStart <= #{timeEnd} " +
+   // select * from reservation WHERE timeStart < end And timeEnd >start;
+    @Select("SELECT id,timeStart,timeEnd,receipt,client_id,daySchedule_id  FROM reservation WHERE timeStart < #{timeEnd} AND timeEnd > #{timeStart} " +
             "AND dayschedule_id = (SELECT id FROM dayschedule WHERE curDate = #{date} " +
             "AND master_id = #{master.user.id});")
     @Results({
@@ -83,8 +97,10 @@ public interface ReservationMapper {
             @Result(property = "services", column = "id", javaType = List.class,
                     many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ServiceMapper.getByReservation", fetchType = FetchType.LAZY)),
     })
-    List<Reservation> getByDateTimeStartTimeEndAndDoctorId(@Param("date")LocalDate date, @Param("timeStart") LocalTime timeStart,
+    List<Reservation> getByDateTimeStartTimeEndAndMasterId(@Param("date")LocalDate date, @Param("timeStart") LocalTime timeStart,
                                                            @Param("timeEnd") LocalTime timeEnd, @Param("master") Master master);
+    @Delete("DELETE FROM reservationWHERE receipt = #{receipt}")
+    void deleteByReceipt(@Param("receipt")String receipt);
     @Delete("DELETE FROM reservation")
     void deleteAll();
 }

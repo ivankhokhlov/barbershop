@@ -6,18 +6,28 @@ public class Service {
     private int id;
     private String name;
     private int price;
+    private int duration;
 
     public Service() {
     }
 
-    public Service(int id, String name, int price) {
+    public Service(int id, String name, int price, int duration) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.duration = duration;
     }
 
-    public Service(String name, int price) {
-        this(0,name,price);
+    public Service(String name, int price, int duration) {
+        this(0,name,price,duration);
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public int getId() {
@@ -47,16 +57,17 @@ public class Service {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Service)) return false;
         Service service = (Service) o;
-        return id == service.id &&
-                price == service.price &&
-                Objects.equals(name, service.name);
+        return getId() == service.getId() &&
+                getPrice() == service.getPrice() &&
+                getDuration() == service.getDuration() &&
+                Objects.equals(getName(), service.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price);
+        return Objects.hash(getId(), getName(), getPrice(), getDuration());
     }
 
     @Override
@@ -65,6 +76,7 @@ public class Service {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
+                ", duration=" + duration +
                 '}';
     }
 }

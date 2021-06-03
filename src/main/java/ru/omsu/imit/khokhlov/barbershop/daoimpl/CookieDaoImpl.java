@@ -61,6 +61,20 @@ public class CookieDaoImpl extends BaseDaoImpl implements CookieDao {
             sqlSession.commit();
         }
     }
+    @Override
+    public void deleteById(int id) {
+        LOGGER.debug("DAO delete Cookie by id {}", id);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getCookieMapper(sqlSession).deleteById(id);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't delete Cookie by uuid {}",id,ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
+    }
 
     @Override
     public void deleteAll() {

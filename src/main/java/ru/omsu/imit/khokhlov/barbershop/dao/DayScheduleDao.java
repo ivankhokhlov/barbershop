@@ -9,6 +9,7 @@ import java.util.List;
 public interface DayScheduleDao {
     DaySchedule insert(DaySchedule daySchedule);
     DaySchedule getById(int id);
+    DaySchedule getByMasterAndDate(Master master, LocalDate date);
     List<DaySchedule> getByMasterAndDate(Master master, LocalDate dateStart, LocalDate dateEnd);
     List<DaySchedule> getByDate(LocalDate dateStart,LocalDate dateEnd);
     void delete(DaySchedule daySchedule);

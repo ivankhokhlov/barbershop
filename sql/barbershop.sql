@@ -43,6 +43,8 @@ CREATE TABLE service(
                            id INT(11) NOT NULL AUTO_INCREMENT,
                            name VARCHAR(50) NOT NULL,
                            price INT(11)NOT NULL,
+                           duration INT(11)NOT NULL,
+                           UNIQUE(name),
                            PRIMARY KEY(id)
 )ENGINE=INNODB DEFAULT CHARSET=utf8,
  COLLATE utf8_general_ci;
@@ -83,6 +85,8 @@ CREATE TABLE dayschedule(
                             id INT(11) NOT NULL AUTO_INCREMENT,
                             curDate DATE NOT NULL,
                             master_id INT(11) NOT NULL,
+                            timeStart TIME NOT NULL,
+                            timeEnd TIME NOT NULL,
                             FOREIGN KEY (master_id) REFERENCES master(user_id) ON DELETE CASCADE,
                             PRIMARY KEY(id)
 )
@@ -94,11 +98,11 @@ CREATE TABLE reservation(
                           timeStart TIME NOT NULL,
                           timeEnd TIME NOT NULL,
                           client_id INT(11)NOT NULL,
-                          ticket VARCHAR(50) NOT NULL,
+                          receipt VARCHAR(50) NOT NULL,
                           dayschedule_id INT(11)NOT NUll,
                           FOREIGN KEY (client_id) REFERENCES client(user_id) ON DELETE CASCADE,
                           FOREIGN KEY (dayschedule_id) REFERENCES dayschedule(id) ON DELETE CASCADE,
-                          UNIQUE(ticket),
+                          UNIQUE(receipt),
                           PRIMARY KEY(id)
 )
     ENGINE=INNODB DEFAULT CHARSET=utf8,

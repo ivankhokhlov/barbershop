@@ -7,6 +7,7 @@ public interface CookieDao {
     Cookie getById(int id);
     Cookie getByUUID(String uuid);
     void deleteByUUID(String uuid);
+    void deleteById(int id);
     void deleteAll();
 
 }

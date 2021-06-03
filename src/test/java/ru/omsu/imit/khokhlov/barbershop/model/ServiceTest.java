@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class ServiceTest extends BaseTest{
     @Test
     public void test1(){
-        Service service = new Service("Модельная стрижка",12);
+        Service service = new Service("Модельная стрижка",12,20);
         Service service1 = serviceDao.insert(service);
         Service service2 = serviceDao.getById(service1.getId());
         Service service3 = serviceDao.getByName(service1.getName());

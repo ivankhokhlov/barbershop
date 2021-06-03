@@ -40,11 +40,11 @@ public class ReservationDaoImpl extends BaseDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Reservation updatePatient(Reservation reservation) {
+    public Reservation updateClient(Reservation reservation) {
         LOGGER.debug("DAO update reservation {}", reservation);
         try (SqlSession sqlSession = getSession()) {
             try {
-                getReservationMapper(sqlSession).updatePatient(reservation);
+                getReservationMapper(sqlSession).updateClient(reservation);
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't update reservation {} {}", reservation, ex);
                 sqlSession.rollback();
@@ -67,12 +67,12 @@ public class ReservationDaoImpl extends BaseDaoImpl implements ReservationDao {
     }
 
     @Override
-    public Reservation getByTicket(String ticket) {
-        LOGGER.debug("DAO get reservation by ticket {}", ticket);
+    public Reservation getByReceipt(String receipt) {
+        LOGGER.debug("DAO get reservation by receipt {}", receipt);
         try (SqlSession sqlSession = getSession()) {
-            return getReservationMapper(sqlSession).getByTicket(ticket);
+            return getReservationMapper(sqlSession).getByReceipt(receipt);
         } catch (RuntimeException ex) {
-            LOGGER.info("Can't get reservation {}",ticket, ex);
+            LOGGER.info("Can't get reservation {}",receipt, ex);
             throw ex;
         }
     }
@@ -93,11 +93,25 @@ public class ReservationDaoImpl extends BaseDaoImpl implements ReservationDao {
                                                                   LocalTime timeEnd, Master master) {
         LOGGER.debug("DAO get reservation by date,timeStart,timeEnd,master {},{},{},{}", date,timeStart,timeEnd,master);
         try (SqlSession sqlSession = getSession()) {
-            return getReservationMapper(sqlSession).getByDateTimeStartTimeEndAndDoctorId(date,timeStart,timeEnd,master);
+            return getReservationMapper(sqlSession).getByDateTimeStartTimeEndAndMasterId(date,timeStart,timeEnd,master);
         } catch (RuntimeException ex) {
             LOGGER.info("Can't get reservation by date,timeStart,timeEnd,master {},{},{},{}",
                     date,timeStart,timeEnd,master,ex);
             throw ex;
+        }
+    }
+    @Override
+    public void deleteByReceipt(String receipt) {
+        LOGGER.debug("DAO deleteByReceip reservation by receipt {}",receipt);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getReservationMapper(sqlSession).deleteByReceipt(receipt);
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't delete all reservation", ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
         }
     }
 
@@ -107,6 +121,7 @@ public class ReservationDaoImpl extends BaseDaoImpl implements ReservationDao {
         try (SqlSession sqlSession = getSession()) {
             try {
                 getReservationMapper(sqlSession).deleteAll();
+                getServiceReservationMapper(sqlSession).deleteAll();
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't delete all reservation", ex);
                 sqlSession.rollback();

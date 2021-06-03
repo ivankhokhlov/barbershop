@@ -24,30 +24,31 @@ public class MasterTest extends BaseTest {
                 "client","password", UserType.CLIENT),"example@gmail.com","Addres","88005553535");
 
         Client client1 = clientDao.insert(client);
-        Service service = serviceDao.insert(new Service("Короткая стрижка",200));
-        Service service1 = serviceDao.insert(new Service("Средняя стрижка",250));
-        Service service2 = serviceDao.insert( new Service("Длинная  стрижка",150));
+        Service service = serviceDao.insert(new Service("Короткая стрижка",200,15));
+        Service service1 = serviceDao.insert(new Service("Средняя стрижка",250,20));
+        Service service2 = serviceDao.insert( new Service("Длинная  стрижка",150,30));
+        Service service3 = serviceDao.insert(new Service("Мытье головы",100,10));
+
         List<Service> services= new ArrayList<>(Arrays.asList(
-                service,service1,service2));
+                service,service1,service2,service3));
         Specialization specialization = new Specialization("Парикмахер");
         Specialization specialization1 = specializationDao.insert(specialization);
         Master master = new Master(new User("Мастер","Мастеров","Мастервич",
                 "master","password", UserType.MASTER),specialization1,services);
         Master master1 = masterDao.insert(master);
-        DaySchedule daySchedule= new DaySchedule(master1,LocalDate.of(2021,4,1));
+        DaySchedule daySchedule= new DaySchedule(master1,LocalDate.of(2021,4,1),
+                LocalTime.of(8,0,0),LocalTime.of(16,0,0));
         DaySchedule daySchedule1= dayScheduleDao.insert(daySchedule);
 
-        Service service4 = serviceDao.insert(new Service("Мытье головы",100));
-        Service service5 = serviceDao.insert(new Service("Короткая стрижка",200));
+
         Reservation reservation = new Reservation(daySchedule1, LocalTime.of(8,0,0),
-                LocalTime.of(9,0,0),"ticket",client1,new ArrayList<>(Arrays.asList(service4,service5
+                LocalTime.of(9,0,0),"ticket",client1,new ArrayList<>(Arrays.asList(service2,service3
         )));
         Reservation reservation1 = reservationDao.insert(reservation);
         daySchedule1.getReservations().add(reservation1);
         master1.getDaySchedulesList().add(daySchedule1);
         master1.setService(services);
         Master master2= masterDao.getById(master1.getUser().getId());
-
         Assert.assertEquals(master1, master2);
 
 

@@ -11,5 +11,6 @@ public interface MasterDao {
     Master getById(int id);
     List<Master> getBySpecialization(Specialization specialization);
     Master getByReservation(Reservation reservation);
+    List<Master> getAllMaster();
     void deleteAll();
 }

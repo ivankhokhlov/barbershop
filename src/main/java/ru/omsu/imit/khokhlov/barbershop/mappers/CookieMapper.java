@@ -24,6 +24,8 @@ public interface CookieMapper {
 
     @Delete("DELETE FROM cookie WHERE uuid = #{uuid}")
     void deleteByUUID(@Param("uuid")String uuid);
+    @Delete("DELETE FROM cookie WHERE user_id = #{id}")
+    void deleteById(@Param("id")int id);
     @Delete("DELETE FROM cookie")
     void deleteAll();
 }

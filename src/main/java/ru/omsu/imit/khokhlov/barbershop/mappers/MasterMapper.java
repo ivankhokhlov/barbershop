@@ -28,6 +28,19 @@ public interface MasterMapper {
                     many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.DayScheduleMapper.getByMaster", fetchType = FetchType.LAZY)),
     })
     Master getById(@Param("id")int id);
+    @Select("SELECT user_id ,specialization_id FROM master")
+    @Results({
+            @Result(property = "user.id", column = "user_id"),
+            @Result(property = "user", column = "user_id", javaType = User.class,
+                    one = @One(select = "ru.omsu.imit.khokhlov.barbershop.mappers.UserMapper.getById", fetchType = FetchType.LAZY)),
+            @Result(property = "service", column = "user_id", javaType = List.class,
+                    many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.ServiceMapper.getByMaster", fetchType = FetchType.LAZY)),
+            @Result(property = "specialization", column = "specialization_id", javaType = Specialization.class,
+                    one = @One(select = "ru.omsu.imit.khokhlov.barbershop.mappers.SpecializationMapper.getById", fetchType = FetchType.LAZY)),
+            @Result(property = "daySchedulesList", column = "user_id", javaType = List.class,
+                    many = @Many(select = "ru.omsu.imit.khokhlov.barbershop.mappers.DayScheduleMapper.getByMaster", fetchType = FetchType.LAZY)),
+    })
+    List<Master> getAllMaster();
     @Select("SELECT user_id ,specialization_id FROM master WHERE specialization_id = #{specialization.id}")
     @Results({
             @Result(property = "user.id", column = "user_id"),

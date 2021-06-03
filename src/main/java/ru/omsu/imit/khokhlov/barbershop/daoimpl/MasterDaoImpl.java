@@ -47,8 +47,16 @@ public class MasterDaoImpl extends BaseDaoImpl implements MasterDao {
         }
     }
 
-
-
+    @Override
+    public List<Master> getAllMaster() {
+        LOGGER.debug("DAO get all masters ");
+        try (SqlSession sqlSession = getSession()) {
+            return getMasterMapper(sqlSession).getAllMaster();
+        } catch (RuntimeException ex) {
+            LOGGER.info("Can't get  all masters ", ex);
+            throw ex;
+        }
+    }
 
     @Override
     public List<Master> getBySpecialization(Specialization specialization) {

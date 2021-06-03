@@ -11,10 +11,11 @@ import java.util.List;
 public interface ReservationDao {
     Reservation insert(Reservation reservation);
     Reservation getById(int id);
-    Reservation updatePatient(Reservation reservation);
+    Reservation updateClient(Reservation reservation);
     Reservation getByDateTimeAndMaster(LocalDate date, LocalTime time, Master master);
     List<Reservation> getByDateTimeStartTimeEndAndMaster(LocalDate date, LocalTime timeStart,
                                                            LocalTime timeEnd, Master master);
-    Reservation getByTicket(String ticket);
+    Reservation getByReceipt(String receipt);
+    void deleteByReceipt(String receipt);
     void deleteAll();
 }

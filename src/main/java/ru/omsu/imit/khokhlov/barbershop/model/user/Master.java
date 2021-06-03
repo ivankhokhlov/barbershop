@@ -60,20 +60,18 @@ public class Master {
         this.daySchedulesList = daySchedulesList;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Master)) return false;
         Master master = (Master) o;
-        return Objects.equals(getUser(), master.getUser()) &&
-                Objects.equals(getSpecialization(), master.getSpecialization()) &&
-                Objects.equals(getService(), master.getService()) &&
-                Objects.equals(getDaySchedulesList(), master.getDaySchedulesList());
+        return Objects.equals(getUser(), master.getUser()) && Objects.equals(getSpecialization(), master.getSpecialization()) && Objects.equals(getService(), master.getService()) && Objects.equals(getDaySchedulesList(), master.getDaySchedulesList());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUser(), getSpecialization(), getService(),getDaySchedulesList());
+        return Objects.hash(getUser(), getSpecialization(), getService(), getDaySchedulesList());
     }
 
     @Override

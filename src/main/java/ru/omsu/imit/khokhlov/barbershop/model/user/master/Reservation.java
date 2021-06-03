@@ -12,34 +12,38 @@ public class Reservation {
     private LocalTime timeStart;
     private LocalTime timeEnd;
     private DaySchedule daySchedule;
-    private String ticket;
+    private String receipt;
     private Client client;
     private List<Service> services;
 
 
-    public Reservation(int id,DaySchedule daySchedule, LocalTime timeStart, LocalTime timeEnd, String ticket, Client client, List<Service> services) {
+    public Reservation(int id, DaySchedule daySchedule, LocalTime timeStart, LocalTime timeEnd, String receipt, Client client, List<Service> services) {
         this.id = id;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
-        this.ticket = ticket;
+        this.receipt = receipt;
         this.client = client;
         this.services = services;
-        this.daySchedule=daySchedule;
+        this.daySchedule = daySchedule;
     }
 
     public Reservation() {
     }
-    public Reservation(DaySchedule daySchedule,LocalTime timeStart, LocalTime timeEnd, String ticket,Client client, List<Service> services) {
-        this(0,daySchedule,timeStart, timeEnd,ticket, client, services);
+
+    public Reservation(DaySchedule daySchedule, LocalTime timeStart, LocalTime timeEnd, String receipt, Client client, List<Service> services) {
+        this(0, daySchedule, timeStart, timeEnd, receipt, client, services);
     }
-    public Reservation(DaySchedule daySchedule,LocalTime timeStart, LocalTime timeEnd, String ticket, List<Service> services) {
-        this(0,daySchedule,timeStart, timeEnd,ticket, null, services);
+
+    public Reservation(DaySchedule daySchedule, LocalTime timeStart, LocalTime timeEnd, String receipt, List<Service> services) {
+        this(0, daySchedule, timeStart, timeEnd, receipt, null, services);
     }
-    public Reservation(DaySchedule daySchedule,LocalTime timeStart, LocalTime timeEnd, String ticket,Client client) {
-        this(0,daySchedule,timeStart, timeEnd,ticket, client, new ArrayList<>());
+
+    public Reservation(DaySchedule daySchedule, LocalTime timeStart, LocalTime timeEnd, String receipt, Client client) {
+        this(0, daySchedule, timeStart, timeEnd, receipt, client, new ArrayList<>());
     }
-    public Reservation(DaySchedule daySchedule,LocalTime timeStart, LocalTime timeEnd, String ticket) {
-        this(0,daySchedule,timeStart,timeEnd,ticket, null, new ArrayList<>());
+
+    public Reservation(DaySchedule daySchedule, LocalTime timeStart, LocalTime timeEnd, String receipt) {
+        this(0, daySchedule, timeStart, timeEnd, receipt, null, new ArrayList<>());
     }
 
     public int getId() {
@@ -78,14 +82,6 @@ public class Reservation {
         return client != null;
     }
 
-    public String getTicket() {
-        return ticket;
-    }
-
-    public void setTicket(String ticket) {
-        this.ticket = ticket;
-    }
-
     public List<Service> getServices() {
         return services;
     }
@@ -102,6 +98,15 @@ public class Reservation {
         this.daySchedule = daySchedule;
     }
 
+    public String getReceipt() {
+        return receipt;
+    }
+
+    public void setReceipt(String receipt) {
+        this.receipt = receipt;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -110,14 +115,14 @@ public class Reservation {
         return getId() == that.getId() &&
                 Objects.equals(getTimeStart(), that.getTimeStart()) &&
                 Objects.equals(getTimeEnd(), that.getTimeEnd()) &&
-                Objects.equals(getTicket(), that.getTicket()) &&
+                Objects.equals(getReceipt(), that.getReceipt()) &&
                 Objects.equals(getClient(), that.getClient()) &&
                 Objects.equals(getServices(), that.getServices());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getTimeStart(), getTimeEnd(),getTicket(), getClient(), getServices());
+        return Objects.hash(getId(), getTimeStart(), getTimeEnd(), getDaySchedule(), getReceipt(), getClient(), getServices());
     }
 
     @Override
@@ -126,7 +131,7 @@ public class Reservation {
                 "id=" + id +
                 ", timeStart=" + timeStart +
                 ", timeEnd=" + timeEnd +
-                ", ticket='" + ticket + '\'' +
+                ", receipt='" + receipt + '\'' +
                 ", client=" + client +
                 ", services=" + services +
                 '}';

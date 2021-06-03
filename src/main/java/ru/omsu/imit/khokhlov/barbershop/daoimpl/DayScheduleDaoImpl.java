@@ -49,14 +49,24 @@ public class DayScheduleDaoImpl extends BaseDaoImpl implements DayScheduleDao {
     public List<DaySchedule> getByMasterAndDate(Master master, LocalDate dateStart, LocalDate dateEnd) {
         LOGGER.debug("DAO get daySchedule by master,dateStart,dateEnd {},{},{}", master, dateStart, dateEnd);
         try (SqlSession sqlSession = getSession()) {
-            return getDayScheduleMapper(sqlSession).getByMasterAndDate(master, dateStart, dateEnd);
+            return getDayScheduleMapper(sqlSession).getByMasterAndDateStartDateEnd(master, dateStart, dateEnd);
         } catch (RuntimeException ex) {
             LOGGER.info("Can't get daySchedule by master dateStart dateEnd {},{},{}", master, dateStart, dateEnd,ex);
             throw ex;
         }
     }
+    @Override
+    public DaySchedule getByMasterAndDate(Master master, LocalDate date) {
+        LOGGER.debug("DAO get daySchedule by master,date {},{}", master, date);
+        try (SqlSession sqlSession = getSession()) {
+            return getDayScheduleMapper(sqlSession).getByMasterAndDate(master, date);
+        } catch (RuntimeException ex) {
+            LOGGER.info("Can't get daySchedule by master,date {},{}", master, date,ex);
+            throw ex;
+        }
+    }
 
-
+    @Override
     public List<DaySchedule> getByDate(@Param("dateStart") LocalDate dateStart, @Param("dateEnd") LocalDate dateEnd) {
         LOGGER.debug("DAO get daySchedule by dateStart,dateEnd {},{}", dateStart, dateEnd);
         try (SqlSession sqlSession = getSession()) {
