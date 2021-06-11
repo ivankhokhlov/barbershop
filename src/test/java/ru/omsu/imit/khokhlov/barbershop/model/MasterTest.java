@@ -50,7 +50,5 @@ public class MasterTest extends BaseTest {
         master1.setService(services);
         Master master2= masterDao.getById(master1.getUser().getId());
         Assert.assertEquals(master1, master2);
-
-
     }
 }

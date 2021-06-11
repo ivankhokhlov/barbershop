@@ -2,29 +2,23 @@ package ru.omsu.imit.khokhlov.barbershop.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.omsu.imit.khokhlov.barbershop.dto.request.*;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.AdminInfoResponse;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.ClientInfoResponse;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.MasterInfoWithoutScheduleResponse;
 import ru.omsu.imit.khokhlov.barbershop.model.user.*;
-import ru.omsu.imit.khokhlov.barbershop.model.user.master.DaySchedule;
-import ru.omsu.imit.khokhlov.barbershop.model.user.master.Reservation;
 import ru.omsu.imit.khokhlov.barbershop.model.user.master.Service;
 import ru.omsu.imit.khokhlov.barbershop.model.user.master.Specialization;
-import ru.omsu.imit.khokhlov.barbershop.utils.ErrorCodes;
-import ru.omsu.imit.khokhlov.barbershop.utils.ServerException;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
-
-import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @org.springframework.stereotype.Service
 public class RegisterService extends BaseService {
-    private ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
     @Autowired
     public RegisterService(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
@@ -51,11 +45,11 @@ public class RegisterService extends BaseService {
         LOGGER.debug("RegisterService registerMaster RegisterMasterRequest,uuid {},{}", request, uuid);
         try {
             Cookie cookie = responseProcessor.getCookie(uuid);
-            System.out.println(cookie);
+
             responseProcessor.checkAdminPermission(cookie.getUser());
             responseProcessor.checkLogin(request.getLogin());
-            LocalDate dateStart = LocalDate.parse(request.getDateStart());
-            LocalDate dateEnd = LocalDate.parse( request.getDateEnd());
+            LocalDate dateStart = LocalDate.parse(request.getDateStart(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            LocalDate dateEnd = LocalDate.parse(request.getDateEnd(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
 
             String specialization = request.getSpecialization();
             Specialization specializationObj = specializationDao.getByName(specialization);

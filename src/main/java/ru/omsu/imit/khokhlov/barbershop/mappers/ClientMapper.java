@@ -1,6 +1,5 @@
 package ru.omsu.imit.khokhlov.barbershop.mappers;
 
-
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.FetchType;
 import ru.omsu.imit.khokhlov.barbershop.model.user.Client;

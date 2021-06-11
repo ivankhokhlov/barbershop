@@ -65,7 +65,6 @@ CREATE TABLE master(
                        specialization_id  INT(11) NOT NULL,
                        FOREIGN KEY (specialization_id) REFERENCES specialization(id) ON DELETE CASCADE,
                        FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
-                       UNIQUE(specialization_id),
                        UNIQUE (user_id),
                        PRIMARY KEY(user_id)
 )

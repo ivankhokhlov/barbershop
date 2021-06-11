@@ -104,10 +104,10 @@ public class ScheduleService extends BaseService {
             if (schedule != null && schedule.contains("yes")) {
                 LocalDate dateStart = LocalDate.now();
                 LocalDate dateEnd = dateStart.plusMonths(1);
-                if (startDate != null) {
+                if (startDate != null && !"".equals(startDate)) {
                     dateStart = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                     dateEnd = dateStart.plusMonths(1);
-                    if (endDate != null) {
+                    if (endDate != null && !"".equals(endDate)) {
                         dateEnd = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                     }
                 }
@@ -121,15 +121,18 @@ public class ScheduleService extends BaseService {
 
     }
 
-    public List<MasterInfoWithoutScheduleResponse> getMastersSchedule(String schedule, String specializationName, String startDate,
+    public List<MasterInfoWithoutScheduleResponse> getMastersSchedule(String schedule, String specialization, String startDate,
                                                                       String endDate, String uuid) {
-        LOGGER.debug("Service getMasterSchedules schedule,specialization,startDate,endDate,uuid {},{},{},{},{}", schedule, specializationName, startDate, endDate, uuid);
+        LOGGER.debug("Service getMasterSchedules schedule,specialization,startDate,endDate,uuid {},{},{},{},{}", schedule, specialization, startDate, endDate, uuid);
         try {
             List<MasterInfoWithoutScheduleResponse> responses = new ArrayList<>();
-            if (specializationName != null) {
-                Specialization specialization = specializationDao.getByName(specializationName);
-                if (specialization != null) {
-                    List<Master> masters = masterDao.getBySpecialization(specialization);
+            System.out.println(specialization);
+            if (specialization != null) {
+                Specialization specializationObj = specializationDao.getByName(specialization);
+                System.out.println(specialization);
+                if (specializationObj != null) {
+                    List<Master> masters = masterDao.getBySpecialization(specializationObj);
+                    System.out.println(masters);
                     for (Master master : masters) {
                         responses.add(getMasterSchedule(master.getUser().getId(), schedule, startDate, endDate, uuid));
                     }

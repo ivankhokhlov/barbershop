@@ -10,5 +10,6 @@ public class BarbershopServer {
         SpringApplication.run(BarbershopServer.class,args);
         System.out.println("-----");
 
+
     }
 }

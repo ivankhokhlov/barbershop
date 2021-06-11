@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.omsu.imit.khokhlov.barbershop.dto.request.RecordToTheMasterRequest;
 import ru.omsu.imit.khokhlov.barbershop.dto.request.ServiceNameRequest;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.RecordToTheMasterResponse;
+import ru.omsu.imit.khokhlov.barbershop.dto.response.ReservationResponse;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.ServiceResponse;
 import ru.omsu.imit.khokhlov.barbershop.model.user.*;
 import ru.omsu.imit.khokhlov.barbershop.model.user.master.DaySchedule;
@@ -35,6 +36,7 @@ public class ReservationService extends BaseService {
             }
             Integer masterId = recordToTheMasterRequest.getMasterId();
             String specialization = recordToTheMasterRequest.getSpecialization();
+            System.out.println(masterId + "" + specialization);
             responseProcessor.checkRecordRequest(masterId, specialization);
             Client client = clientDao.getById(cookie.getUser().getId());
             List<ServiceNameRequest> serviceNameRequests = recordToTheMasterRequest.getServiceNameRequests();
@@ -71,7 +73,7 @@ public class ReservationService extends BaseService {
                     throw new ServerException(ErrorCodes.RESERVATION_IS_OCCUPIED);
                 }
                 DaySchedule daySchedule = dayScheduleDao.getByMasterAndDate(master, date);
-                String receipt = responseProcessor.getReceipt(date, timeStart, timeEnd, master, client,cost);
+                String receipt = responseProcessor.getReceipt(date, timeStart, timeEnd, master, client, cost);
                 Reservation reservation = new Reservation(daySchedule, timeStart, timeEnd, receipt, client, services);
                 reservationDao.insert(reservation);
                 User userFromMaster = master.getUser();
@@ -100,7 +102,7 @@ public class ReservationService extends BaseService {
                         continue;
                     }
                     DaySchedule daySchedule = dayScheduleDao.getByMasterAndDate(master, date);
-                    String receipt = responseProcessor.getReceipt(date, timeStart, timeEnd, master, client,cost);
+                    String receipt = responseProcessor.getReceipt(date, timeStart, timeEnd, master, client, cost);
 
                     Reservation reservation = new Reservation(daySchedule, timeStart, timeEnd, receipt, client, services);
                     reservationDao.insert(reservation);
@@ -121,6 +123,37 @@ public class ReservationService extends BaseService {
             throw ex;
         }
     }
+
+    public ReservationResponse getInfoByReceipt(String receipt, String uuid) {
+        LOGGER.debug("Service getInfoByReceipt receipt,uuid {},{}", receipt, uuid);
+        try {
+            Cookie cookie = responseProcessor.getCookie(uuid);
+
+            Reservation reservation = reservationDao.getByReceipt(receipt);
+            if (reservation == null) {
+                throw new ServerException(ErrorCodes.RESERVATION_NOT_FOUND);
+            }
+
+            if (cookie.getUser().getId() == reservation.getClient().getUser().getId()) {
+
+                return responseProcessor.getResponse(reservation);
+
+            }
+            Master master = masterDao.getByReservation(reservation);
+            if (cookie.getUser().getId() == (master.getUser().getId())) {
+
+                return responseProcessor.getResponse(reservation);
+
+            }
+            responseProcessor.checkAdminPermission(cookie.getUser());
+            return responseProcessor.getResponse(reservation);
+
+        } catch (Exception ex) {
+            LOGGER.info("Service can't getInfoByReceipt ", ex);
+            throw ex;
+        }
+    }
+
     public void deleteRecordToTheMaster(String receipt, String uuid) {
         LOGGER.debug("Service deleteRecordToTheMaster receipt,uuid {},{}", receipt, uuid);
         try {

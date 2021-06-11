@@ -1,7 +1,6 @@
 package ru.omsu.imit.khokhlov.barbershop.endpoint;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +24,9 @@ import javax.validation.constraints.Positive;
 @RestController
 @RequestMapping("/api/clients")
 public class ClientEndpoint {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientEndpoint.class);
-
-    private RegisterService registerService;
-    private UpdateService updateService;
-    private SessionService sessionService;
+    private final RegisterService registerService;
+    private final UpdateService updateService;
+    private final SessionService sessionService;
 
     @Autowired
     public ClientEndpoint(RegisterService registerService, UpdateService updateService, SessionService sessionService) {

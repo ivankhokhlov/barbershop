@@ -3,7 +3,6 @@ package ru.omsu.imit.khokhlov.barbershop.dto.request;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.omsu.imit.khokhlov.barbershop.validator.annotation.MaxLength;
-import ru.omsu.imit.khokhlov.barbershop.validator.annotation.NotNullInList;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -26,13 +25,9 @@ public class RecordToTheMasterRequest {
     @NotBlank
     private String timeStart;
     @MaxLength
-    @NotEmpty
-    @NotNull
-    @NotBlank
     private String specialization;
     @NotEmpty
     @NotNull
-    @NotNullInList
     private List<ServiceNameRequest> serviceNameRequests;
 
     public RecordToTheMasterRequest() {

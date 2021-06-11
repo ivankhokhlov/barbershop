@@ -1,6 +1,5 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
-import java.util.Objects;
 
 public class AllSettingsResponse extends BaseSettingsResponse {
     private int maxDurationReception;
@@ -41,18 +40,5 @@ public class AllSettingsResponse extends BaseSettingsResponse {
                 getMinDurationReception() == that.getMinDurationReception();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getMaxDurationReception(), getMinDurationReception());
-    }
 
-    @Override
-    public String toString() {
-        return "AllSettingsResponse{" +
-                "maxNameLength=" + getMaxNameLength() +
-                ", minPasswordLength=" + getMinPasswordLength() +
-                "maxDurationReception=" + maxDurationReception +
-                ", minDurationReception=" + minDurationReception +
-                '}';
-    }
 }

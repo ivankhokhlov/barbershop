@@ -1,6 +1,5 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
-import java.util.Objects;
 
 public class AdminInfoResponse {
     private Integer id;
@@ -58,20 +57,4 @@ public class AdminInfoResponse {
     }
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AdminInfoResponse)) return false;
-        AdminInfoResponse that = (AdminInfoResponse) o;
-        return Objects.equals(getId(), that.getId()) &&
-                Objects.equals(getFirstName(), that.getFirstName()) &&
-                Objects.equals(getLastName(), that.getLastName()) &&
-                Objects.equals(getPatronymic(), that.getPatronymic()) &&
-                Objects.equals(getPosition(), that.getPosition());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getFirstName(), getLastName(), getPatronymic(), getPosition());
-    }
 }

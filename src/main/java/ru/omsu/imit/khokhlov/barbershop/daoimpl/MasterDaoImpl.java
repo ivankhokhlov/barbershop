@@ -37,6 +37,25 @@ public class MasterDaoImpl extends BaseDaoImpl implements MasterDao {
     }
 
     @Override
+    public Master update(Master master) {
+        LOGGER.debug("DAO update master {}", master);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getUserMapper(sqlSession).update(master.getUser());
+                getMasterMapper(sqlSession).update(master);
+                master = getMasterMapper(sqlSession).getById(master.getUser().getId());
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't update master {} {}", master, ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
+        return master;
+    }
+
+
+    @Override
     public Master getById(int id) {
         LOGGER.debug("DAO get master by Id {}", id);
         try (SqlSession sqlSession = getSession()) {
@@ -59,23 +78,70 @@ public class MasterDaoImpl extends BaseDaoImpl implements MasterDao {
     }
 
     @Override
+    public Master addServices(Master master, List<Service> services) {
+        LOGGER.debug("DAO addServices master,services {},{}", master, services);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                for (Service service : master.getService()) {
+                    getServiceMasterMapper(sqlSession).insert(service, master);
+                }
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't addServices master {} {}", master, ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
+        return master;
+    }
+
+    @Override
+    public Master deleteServices(Master master, List<Service> services) {
+        LOGGER.debug("DAO deleteServices master,services {},{}", master, services);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                for (Service service : master.getService()) {
+                    getServiceMasterMapper(sqlSession).deleteMasterFromService(service, master);
+                }
+            } catch (RuntimeException ex) {
+                LOGGER.info("Can't deleteServices master {} {}", master, ex);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
+        return master;
+    }
+
+    @Override
     public List<Master> getBySpecialization(Specialization specialization) {
-        LOGGER.debug("DAO get master by specialization {}", specialization);
+        LOGGER.debug("DAO getBySpecialization master by specialization {}", specialization);
         try (SqlSession sqlSession = getSession()) {
             return getMasterMapper(sqlSession).getBySpecialization(specialization);
         } catch (RuntimeException ex) {
-            LOGGER.info("Can't get master by specialization{}",specialization, ex);
+            LOGGER.info("Can't getBySpecialization master by specialization{}", specialization, ex);
             throw ex;
         }
     }
 
     @Override
     public Master getByReservation(Reservation reservation) {
-        LOGGER.debug("DAO get master by reservation {}", reservation);
+        LOGGER.debug("DAO getByReservation master by reservation {}", reservation);
         try (SqlSession sqlSession = getSession()) {
             return getMasterMapper(sqlSession).getByReservation(reservation);
         } catch (RuntimeException ex) {
-            LOGGER.info("Can't get master {}",reservation, ex);
+            LOGGER.info("Can't getByReservation master {}", reservation, ex);
+            throw ex;
+        }
+    }
+
+    @Override
+    public List<Integer> getByService(Service service) {
+        LOGGER.debug("DAO getByReservation masterIds by service {}", service);
+        try (SqlSession sqlSession = getSession()) {
+            return getMasterMapper(sqlSession).getByService(service);
+        } catch (RuntimeException ex) {
+            LOGGER.info("Can't getByReservation masterIds by service {}", service, ex);
             throw ex;
         }
     }

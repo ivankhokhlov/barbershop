@@ -1,6 +1,5 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
-import java.util.Objects;
 
 public class BaseSettingsResponse {
     private int maxNameLength;
@@ -38,17 +37,4 @@ public class BaseSettingsResponse {
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BaseSettingsResponse)) return false;
-        BaseSettingsResponse that = (BaseSettingsResponse) o;
-        return getMaxNameLength() == that.getMaxNameLength() &&
-                getMinPasswordLength() == that.getMinPasswordLength();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMaxNameLength(), getMinPasswordLength());
-    }
 }

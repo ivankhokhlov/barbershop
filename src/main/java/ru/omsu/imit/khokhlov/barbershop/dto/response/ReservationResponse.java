@@ -1,15 +1,21 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
+
 import java.time.LocalTime;
-import java.util.Objects;
+import java.util.List;
 
 public class ReservationResponse extends ReservationWithoutClientResponse {
     private ClientInfoResponse client;
+    private List<ServiceResponse> services;
 
-    public ReservationResponse(LocalTime timeStart, LocalTime timeEnd, ClientInfoResponse client) {
+
+    public ReservationResponse(LocalTime timeStart, LocalTime timeEnd,
+                               ClientInfoResponse client, List<ServiceResponse> services) {
         super(timeStart, timeEnd, true);
         this.client = client;
+        this.services = services;
     }
+
 
     public ReservationResponse() {
     }
@@ -22,17 +28,12 @@ public class ReservationResponse extends ReservationWithoutClientResponse {
         this.client = client;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ReservationResponse)) return false;
-        if (!super.equals(o)) return false;
-        ReservationResponse that = (ReservationResponse) o;
-        return Objects.equals(getClient(), that.getClient());
+    public List<ServiceResponse> getServices() {
+        return services;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getClient());
+    public void setServices(List<ServiceResponse> services) {
+        this.services = services;
     }
+
 }

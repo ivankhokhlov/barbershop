@@ -5,6 +5,7 @@ import ru.omsu.imit.khokhlov.barbershop.validator.annotation.MaxLength;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.util.Objects;
 
 public class ServiceRequest {
     @MaxLength
@@ -49,5 +50,29 @@ public class ServiceRequest {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServiceRequest that = (ServiceRequest) o;
+        return price == that.price &&
+                duration == that.duration &&
+                Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, price, duration);
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceRequest{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", duration=" + duration +
+                '}';
     }
 }

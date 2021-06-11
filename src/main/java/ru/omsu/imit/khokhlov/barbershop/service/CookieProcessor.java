@@ -1,8 +1,8 @@
 package ru.omsu.imit.khokhlov.barbershop.service;
 
-
 import org.springframework.stereotype.Service;
-import ru.omsu.imit.khokhlov.barbershop.utils.*;
+import ru.omsu.imit.khokhlov.barbershop.utils.ErrorCodes;
+import ru.omsu.imit.khokhlov.barbershop.utils.ServerException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

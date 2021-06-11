@@ -1,7 +1,7 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
 import java.util.List;
-import java.util.Objects;
+
 
 public class MasterInfoResponse extends MasterInfoWithoutScheduleResponse{
 

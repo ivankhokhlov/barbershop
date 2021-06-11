@@ -1,17 +1,17 @@
 package ru.omsu.imit.khokhlov.barbershop.endpoint;
 
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.omsu.imit.khokhlov.barbershop.dto.request.RegisterMasterRequest;
+import ru.omsu.imit.khokhlov.barbershop.dto.request.UpdateMasterRequest;
 import ru.omsu.imit.khokhlov.barbershop.dto.request.UpdateScheduleRequest;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.MasterInfoWithoutScheduleResponse;
-import ru.omsu.imit.khokhlov.barbershop.service.*;
+import ru.omsu.imit.khokhlov.barbershop.service.CookieProcessor;
+import ru.omsu.imit.khokhlov.barbershop.service.RegisterService;
+import ru.omsu.imit.khokhlov.barbershop.service.ScheduleService;
+import ru.omsu.imit.khokhlov.barbershop.service.UpdateService;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +24,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/masters")
 public class MasterEndpoint {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MasterEndpoint.class);
-
     private final RegisterService registerService;
     private final UpdateService updateService;
     private final ScheduleService scheduleService;
@@ -48,17 +45,26 @@ public class MasterEndpoint {
 
     @PutMapping(value = "/{masterid}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public MasterInfoWithoutScheduleResponse updateMaster(@Positive @NotNull @PathVariable("masterid") Integer masterid,
-                                                          @Valid @RequestBody UpdateScheduleRequest updateScheduleRequest, HttpServletRequest request) {
+                                                          @Valid @RequestBody UpdateMasterRequest updateMasterRequest, HttpServletRequest request) {
+        Cookie cookie = CookieProcessor.getCookie(request);
+        String uuid = cookie.getValue();
+        return updateService.updateMaster(masterid, updateMasterRequest, uuid);
+    }
+
+    @PutMapping(value = "/schedule/{masterid}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public MasterInfoWithoutScheduleResponse updateSchedule(@Positive @NotNull @PathVariable("masterid") Integer masterid,
+                                                            @Valid @RequestBody UpdateScheduleRequest updateScheduleRequest, HttpServletRequest request) {
         Cookie cookie = CookieProcessor.getCookie(request);
         String uuid = cookie.getValue();
         return updateService.updateSchedule(masterid, updateScheduleRequest, uuid);
     }
 
+
     @GetMapping(value = "/{masterid}", produces = MediaType.APPLICATION_JSON_VALUE)
     public MasterInfoWithoutScheduleResponse getMasterSchedule(@Positive @NotNull @PathVariable("masterid") Integer masterid,
-                                                               @RequestParam("schedule") String schedule,
-                                                               @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam("startDate") String startDate,
-                                                               @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam("endDate") String endDate
+                                                               @RequestParam(required = false, name = "schedule") String schedule,
+                                                               @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam(required = false, name = "startDate") String startDate,
+                                                               @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam(required = false, name = "endDate") String endDate
             , HttpServletRequest request) {
         Cookie cookie = CookieProcessor.getCookie(request);
         String uuid = cookie.getValue();
@@ -66,13 +72,14 @@ public class MasterEndpoint {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MasterInfoWithoutScheduleResponse> getMastersSchedule(@RequestParam("schedule") String schedule,
-                                                                      @RequestParam("speciality ") String speciality,
-                                                                      @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam("startDate") String startDate,
-                                                                      @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam("endDate") String endDate
+    public List<MasterInfoWithoutScheduleResponse> getMastersSchedule(@RequestParam(required = false, name = "schedule") String schedule,
+                                                                      @RequestParam(required = false, name = "specialization ") String specialization,
+                                                                      @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam(required = false, name = "startDate") String startDate,
+                                                                      @DateTimeFormat(pattern = "dd.MM.yyyy") @RequestParam(required = false, name = "endDate") String endDate
             , HttpServletRequest request) {
         Cookie cookie = CookieProcessor.getCookie(request);
         String uuid = cookie.getValue();
-        return scheduleService.getMastersSchedule( schedule, speciality, startDate, endDate, uuid);
+        System.out.println(specialization);
+        return scheduleService.getMastersSchedule(schedule, specialization, startDate, endDate, uuid);
     }
 }

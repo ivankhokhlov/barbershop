@@ -18,16 +18,15 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class ResponseProcessor {
-    private static UserDao userDao = new UserDaoImpl();
-    private static AdminDao adminDao = new AdminDaoImpl();
-    private static ClientDao clientDao = new ClientDaoImpl();
-    private static MasterDao masterDao = new MasterDaoImpl();
-    private static CookieDao cookieDao = new CookieDaoImpl();
+    private static final UserDao userDao = new UserDaoImpl();
+    private static final AdminDao adminDao = new AdminDaoImpl();
+    private static final ClientDao clientDao = new ClientDaoImpl();
+    private static final MasterDao masterDao = new MasterDaoImpl();
+    private static final CookieDao cookieDao = new CookieDaoImpl();
+
 
     public Object getResponse(User user) {
         UserType userType = user.getUserType();
@@ -38,7 +37,7 @@ public class ResponseProcessor {
 
             case MASTER:
                 Master master = masterDao.getById(user.getId());
-                return getResponse(master,master.getUser());
+                return getResponse(master, master.getUser());
 
             case CLIENT:
                 Client client = clientDao.getById(user.getId());
@@ -55,10 +54,22 @@ public class ResponseProcessor {
 
     }
 
-    public MasterInfoWithoutScheduleResponse getResponse(Master master,User userRequest) {
+    public ReservationResponse getResponse(Reservation reservation) {
+        LocalTime timeStart = reservation.getTimeStart();
+        LocalTime timeEnd = reservation.getTimeEnd();
+        Client clientInReservation = reservation.getClient();
+
+        List<Service> services = reservation.getServices();
+        List<ServiceResponse> serviceResponses = getResponse(services);
+        ClientInfoResponse clientInfoResponse = getResponse(clientInReservation);
+        return new ReservationResponse(timeStart,
+                timeEnd, clientInfoResponse, serviceResponses);
+    }
+
+    public MasterInfoWithoutScheduleResponse getResponse(Master master, User userRequest) {
         User masterUser = master.getUser();
         List<Service> services = master.getService();
-        List<ServiceResponse> serviceResponses =getResponse(services);
+        List<ServiceResponse> serviceResponses = getResponse(services);
         List<DaySchedule> daySchedules = master.getDaySchedulesList();
         if (daySchedules != null) {
             List<DayScheduleResponse> schedule = new ArrayList<>();
@@ -75,18 +86,18 @@ public class ResponseProcessor {
                         if (userRequest.equals(clientInReservation.getUser()) || userRequest.getUserType() != UserType.CLIENT) {
                             ClientInfoResponse clientInfoResponse = getResponse(clientInReservation);
                             ReservationResponse reservationResponse = new ReservationResponse(timeStart,
-                                    timeEnd, clientInfoResponse);
+                                    timeEnd, clientInfoResponse, serviceResponses);
                             receptionResponses.add(reservationResponse);
                         } else {
                             receptionResponses.add(new ReservationWithoutClientResponse(timeStart,
                                     timeEnd));
                         }
                     } else {
-                        receptionResponses.add(new ReservationWithoutClientResponse(timeStart,timeEnd));
+                        receptionResponses.add(new ReservationWithoutClientResponse(timeStart, timeEnd));
                     }
 
                 }
-                DayScheduleResponse dayScheduleResponse = new DayScheduleResponse(curDate, receptionResponses);
+                DayScheduleResponse dayScheduleResponse = new DayScheduleResponse(curDate, daySchedule.getTimeStart(), daySchedule.getTimeEnd(), receptionResponses);
                 schedule.add(dayScheduleResponse);
             }
 
@@ -96,7 +107,7 @@ public class ResponseProcessor {
                     masterUser.getLastName(),
                     masterUser.getPatronymic(),
                     new SpecializationResponse(master.getSpecialization().getId(),
-                            master.getSpecialization().getName()),serviceResponses,schedule);
+                            master.getSpecialization().getName()), serviceResponses, schedule);
         }
         return new MasterInfoWithoutScheduleResponse(
                 masterUser.getId(),
@@ -108,13 +119,19 @@ public class ResponseProcessor {
                         master.getSpecialization().getName()),
                 serviceResponses);
     }
-    public List<ServiceResponse> getResponse(List<Service> services){
+
+    public List<ServiceResponse> getResponse(List<Service> services) {
         List<ServiceResponse> serviceResponses = new ArrayList<>(services.size());
         for (Service service : services) {
             serviceResponses.add(new ServiceResponse(service.getId(),
-                    service.getName(), service.getPrice(),service.getDuration()));
+                    service.getName(), service.getPrice(), service.getDuration()));
         }
         return serviceResponses;
+    }
+
+    public ServiceResponseAndMastersId getResponse(Service service, List<Integer> mastersIds) {
+        return new ServiceResponseAndMastersId(new ServiceResponse(service.getId(),
+                service.getName(), service.getPrice(), service.getDuration()), mastersIds);
     }
 
 
@@ -135,13 +152,14 @@ public class ResponseProcessor {
 
         return cookie;
     }
-    public String getReceipt(LocalDate date,LocalTime timeStart,LocalTime timeEnd,Master master,Client client,int cost){
+
+    public String getReceipt(LocalDate date, LocalTime timeStart, LocalTime timeEnd, Master master, Client client, int cost) {
         String formattedDate = date.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
         String formattedTimeStart = timeStart.format(DateTimeFormatter.ofPattern("HHmm"));
-        String formattedTimeEnd= timeEnd.format(DateTimeFormatter.ofPattern("HHmm"));
-        return  "Master<" + master.getUser().getId() + ">"
-                +"Client<"+client.getUser().getId()+">" +
-                formattedDate +'('+ formattedTimeStart +"\\|"+formattedTimeEnd+')'+cost;
+        String formattedTimeEnd = timeEnd.format(DateTimeFormatter.ofPattern("HHmm"));
+        return "Master<" + master.getUser().getId() + ">"
+                + "Client<" + client.getUser().getId() + ">" +
+                formattedDate + '(' + formattedTimeStart + "." + formattedTimeEnd + ')' + cost;
     }
 
 

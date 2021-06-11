@@ -2,14 +2,14 @@ package ru.omsu.imit.khokhlov.barbershop.dto.request;
 
 
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.omsu.imit.khokhlov.barbershop.validator.annotation.*;
+import ru.omsu.imit.khokhlov.barbershop.validator.annotation.Login;
+import ru.omsu.imit.khokhlov.barbershop.validator.annotation.MaxLength;
+import ru.omsu.imit.khokhlov.barbershop.validator.annotation.NotNullInList;
+import ru.omsu.imit.khokhlov.barbershop.validator.annotation.Password;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,7 +53,6 @@ public class RegisterMasterRequest {
     private String specialization;
     @NotEmpty
     @NotNull
-    @NotNullInList
     private List<ServiceRequest> serviceRequests;
     private WeekScheduleRequest weekSchedule;
     private List<BoxForDayScheduleRequest> weekDaysSchedule;

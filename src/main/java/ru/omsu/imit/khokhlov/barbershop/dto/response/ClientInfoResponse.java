@@ -1,6 +1,5 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
-import java.util.Objects;
 
 public class ClientInfoResponse {
     private int clientId;
@@ -80,22 +79,4 @@ public class ClientInfoResponse {
         this.phone = phone;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ClientInfoResponse)) return false;
-        ClientInfoResponse that = (ClientInfoResponse) o;
-        return getClientId() == that.getClientId() &&
-                Objects.equals(getFirstName(), that.getFirstName()) &&
-                Objects.equals(getLastName(), that.getLastName()) &&
-                Objects.equals(getPatronymic(), that.getPatronymic()) &&
-                Objects.equals(getEmail(), that.getEmail()) &&
-                Objects.equals(getAddress(), that.getAddress()) &&
-                Objects.equals(getPhone(), that.getPhone());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getClientId(), getFirstName(), getLastName(), getPatronymic(), getEmail(), getAddress(), getPhone());
-    }
 }

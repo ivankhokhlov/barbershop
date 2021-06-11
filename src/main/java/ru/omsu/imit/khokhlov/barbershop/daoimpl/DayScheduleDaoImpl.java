@@ -36,43 +36,43 @@ public class DayScheduleDaoImpl extends BaseDaoImpl implements DayScheduleDao {
 
     @Override
     public DaySchedule getById(int id) {
-        LOGGER.debug("DAO get daySchedule by Id {}", id);
+        LOGGER.debug("DAO getById daySchedule by Id {}", id);
         try (SqlSession sqlSession = getSession()) {
             return getDayScheduleMapper(sqlSession).getById(id);
         } catch (RuntimeException ex) {
-            LOGGER.info("Can't get daySchedule {}",id,ex);
+            LOGGER.info("Can't getById daySchedule {}", id, ex);
             throw ex;
         }
     }
 
     @Override
     public List<DaySchedule> getByMasterAndDate(Master master, LocalDate dateStart, LocalDate dateEnd) {
-        LOGGER.debug("DAO get daySchedule by master,dateStart,dateEnd {},{},{}", master, dateStart, dateEnd);
+        LOGGER.debug("DAO getByMasterAndDate daySchedule by master,dateStart,dateEnd {},{},{}", master, dateStart, dateEnd);
         try (SqlSession sqlSession = getSession()) {
             return getDayScheduleMapper(sqlSession).getByMasterAndDateStartDateEnd(master, dateStart, dateEnd);
         } catch (RuntimeException ex) {
-            LOGGER.info("Can't get daySchedule by master dateStart dateEnd {},{},{}", master, dateStart, dateEnd,ex);
+            LOGGER.info("Can't getByMasterAndDate daySchedule by master dateStart dateEnd {},{},{}", master, dateStart, dateEnd, ex);
             throw ex;
         }
     }
     @Override
     public DaySchedule getByMasterAndDate(Master master, LocalDate date) {
-        LOGGER.debug("DAO get daySchedule by master,date {},{}", master, date);
+        LOGGER.debug("DAO getByMasterAndDate daySchedule by master,date {},{}", master, date);
         try (SqlSession sqlSession = getSession()) {
             return getDayScheduleMapper(sqlSession).getByMasterAndDate(master, date);
         } catch (RuntimeException ex) {
-            LOGGER.info("Can't get daySchedule by master,date {},{}", master, date,ex);
+            LOGGER.info("Can't getByMasterAndDate daySchedule by master,date {},{}", master, date, ex);
             throw ex;
         }
     }
 
     @Override
     public List<DaySchedule> getByDate(@Param("dateStart") LocalDate dateStart, @Param("dateEnd") LocalDate dateEnd) {
-        LOGGER.debug("DAO get daySchedule by dateStart,dateEnd {},{}", dateStart, dateEnd);
+        LOGGER.debug("DAO getByDate daySchedule by dateStart,dateEnd {},{}", dateStart, dateEnd);
         try (SqlSession sqlSession = getSession()) {
             return getDayScheduleMapper(sqlSession).getByDate(dateStart, dateEnd);
         } catch (RuntimeException ex) {
-            LOGGER.info("Can't get daySchedule by dateStart,dateEnd {},{}", dateStart, dateEnd,ex);
+            LOGGER.info("Can't getByDate daySchedule by dateStart,dateEnd {},{}", dateStart, dateEnd, ex);
             throw ex;
         }
     }

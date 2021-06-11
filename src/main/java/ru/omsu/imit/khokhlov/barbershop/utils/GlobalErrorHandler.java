@@ -1,6 +1,7 @@
 package ru.omsu.imit.khokhlov.barbershop.utils;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
 @ControllerAdvice
@@ -25,6 +25,7 @@ public class GlobalErrorHandler {
         );
         return error;
     }
+
     @ExceptionHandler(ServerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
@@ -33,6 +34,16 @@ public class GlobalErrorHandler {
         error.getErrors().add(new Error(exc.getErrorCodes()));
         return error;
     }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ServerErrors handleJsonProcessingException(JsonProcessingException exc) {
+        final ServerErrors error = new ServerErrors();
+        error.getErrors().add(new Error(ErrorCodes.JSON_IS_WRONG));
+        return error;
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
@@ -41,10 +52,11 @@ public class GlobalErrorHandler {
         error.getAllErrors().add(exc.getMessage());
         return error;
     }
-    public static class Error{
-        private ErrorCodes errorCode;
-        private String field;
-        private String message;
+
+    public static class Error {
+        private final ErrorCodes errorCode;
+        private final String field;
+        private final String message;
 
         public Error(ErrorCodes errorCode) {
             this.errorCode = errorCode;

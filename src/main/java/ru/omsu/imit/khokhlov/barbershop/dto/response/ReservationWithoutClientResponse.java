@@ -1,7 +1,7 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
 import java.time.LocalTime;
-import java.util.Objects;
+
 
 public class ReservationWithoutClientResponse {
     private LocalTime timeStart;
@@ -45,27 +45,4 @@ public class ReservationWithoutClientResponse {
         this.booked = booked;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ReservationWithoutClientResponse)) return false;
-        ReservationWithoutClientResponse that = (ReservationWithoutClientResponse) o;
-        return isBooked() == that.isBooked() &&
-                Objects.equals(getTimeStart(), that.getTimeStart()) &&
-                Objects.equals(getTimeEnd(), that.getTimeEnd());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getTimeStart(), getTimeEnd(), isBooked());
-    }
-
-    @Override
-    public String toString() {
-        return "ReservationWithoutClientResponse{" +
-                "timeStart=" + timeStart +
-                ", timeEnd=" + timeEnd +
-                ", booked=" + booked +
-                '}';
-    }
 }

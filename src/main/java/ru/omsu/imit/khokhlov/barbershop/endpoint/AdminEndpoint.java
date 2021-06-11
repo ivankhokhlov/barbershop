@@ -1,8 +1,5 @@
 package ru.omsu.imit.khokhlov.barbershop.endpoint;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +16,9 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/admins")
 public class AdminEndpoint {
+    private final RegisterService registerService;
+    private final UpdateService updateService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdminEndpoint.class);
-
-    private RegisterService registerService;
-    private UpdateService updateService;
     @Autowired
     public AdminEndpoint(RegisterService registerService, UpdateService updateService) {
         this.registerService = registerService;
@@ -32,9 +27,9 @@ public class AdminEndpoint {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object registerAdmin(@Valid @RequestBody RegisterAdminRequest registerAdminRequest, HttpServletRequest request) {
-        Cookie cookie= CookieProcessor.getCookie(request);
-        String uuid=cookie.getValue();
-        return registerService.registerAdmin(registerAdminRequest,uuid);
+        Cookie cookie = CookieProcessor.getCookie(request);
+        String uuid = cookie.getValue();
+        return registerService.registerAdmin(registerAdminRequest, uuid);
     }
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object updateAdmin(@Valid @RequestBody UpdateAdminRequest updateAdminRequest, HttpServletRequest request) {

@@ -3,7 +3,6 @@ package ru.omsu.imit.khokhlov.barbershop.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import ru.omsu.imit.khokhlov.barbershop.dto.request.*;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.AdminInfoResponse;
 import ru.omsu.imit.khokhlov.barbershop.dto.response.ClientInfoResponse;
@@ -11,20 +10,26 @@ import ru.omsu.imit.khokhlov.barbershop.dto.response.MasterInfoWithoutScheduleRe
 import ru.omsu.imit.khokhlov.barbershop.model.user.*;
 import ru.omsu.imit.khokhlov.barbershop.model.user.master.DaySchedule;
 import ru.omsu.imit.khokhlov.barbershop.model.user.master.Reservation;
+import ru.omsu.imit.khokhlov.barbershop.model.user.master.Service;
+import ru.omsu.imit.khokhlov.barbershop.model.user.master.Specialization;
 import ru.omsu.imit.khokhlov.barbershop.utils.ErrorCodes;
 import ru.omsu.imit.khokhlov.barbershop.utils.ServerException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-@Service
+
+@org.springframework.stereotype.Service
 public class UpdateService extends BaseService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateService.class);
-    private ScheduleService scheduleService;
+    private final ScheduleService scheduleService;
+
     @Autowired
     public UpdateService(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
+
     public AdminInfoResponse updateAdmin(UpdateAdminRequest updateAdminRequest, String uuid) {
         LOGGER.debug("Service updateAdmin UpdateAdminRequest,uuid {},{}", updateAdminRequest, uuid);
         try {
@@ -41,7 +46,39 @@ public class UpdateService extends BaseService {
             Admin admin = adminDao.update(newAdmin);
             return responseProcessor.getResponse(admin);
         } catch (Exception ex) {
-            LOGGER.info("Service can't updateAdmin {},{}",updateAdminRequest, uuid, ex);
+            LOGGER.info("Service can't updateAdmin {},{}", updateAdminRequest, uuid, ex);
+            throw ex;
+        }
+    }
+
+    public MasterInfoWithoutScheduleResponse updateMaster(Integer id, UpdateMasterRequest updateMasterRequest, String uuid) {
+        LOGGER.debug("Service updateMaster UpdateMasterRequest,uuid {},{}", updateMasterRequest, uuid);
+        try {
+            Cookie cookie = responseProcessor.getCookie(uuid);
+
+            if (!(cookie.getUser().getUserType() == UserType.ADMIN)) {
+                throw new ServerException(ErrorCodes.ACCESS_DENIED);
+            }
+            Master masterById = masterDao.getById(id);
+            if (masterById == null) {
+                throw new ServerException(ErrorCodes.MASTER_ID_NOT_FOUND);
+            }
+            String specialization = updateMasterRequest.getSpecialization();
+            Specialization specializationObj = specializationDao.getByName(specialization);
+            if (specializationObj == null) {
+                specializationObj = specializationDao.insert(new Specialization(specialization));
+            }
+
+            Master newMaster = new Master(new User(id, updateMasterRequest.getFirstName(),
+                    updateMasterRequest.getLastName(),
+                    updateMasterRequest.getPatronymic(),
+                    null,
+                    updateMasterRequest.getNewPassword(), null), specializationObj, null, null
+            );
+            Master master = masterDao.update(newMaster);
+            return responseProcessor.getResponse(master, cookie.getUser());
+        } catch (Exception ex) {
+            LOGGER.info("Service can't updateMaster {},{}", updateMasterRequest, uuid, ex);
             throw ex;
         }
     }
@@ -77,29 +114,69 @@ public class UpdateService extends BaseService {
             List<BoxForDayScheduleRequest> weekDaysSchedule = updateScheduleRequest.getWeekDaysSchedule();
             WeekScheduleRequest weekSchedule = updateScheduleRequest.getWeekSchedule();
             responseProcessor.checkSchedule(weekDaysSchedule, weekSchedule);
-            return scheduleService.insertSchedule(weekDaysSchedule, weekSchedule, dateStart, dateEnd, master );
+            return scheduleService.insertSchedule(weekDaysSchedule, weekSchedule, dateStart, dateEnd, master);
         } catch (Exception ex) {
             LOGGER.info("Service can't updateSchedule {},{},{}", masterId, updateScheduleRequest, uuid, ex);
             throw ex;
         }
     }
 
-    public ClientInfoResponse updateClient(UpdateClientRequest updateClientRequest, String uuid) {
-        Cookie cookie = responseProcessor.getCookie(uuid);
-        if (!cookie.getUser().getPassword().equals(updateClientRequest.getOldPassword())) {
-            throw new ServerException(ErrorCodes.WRONG_PASSWORD);
-        }
+    public MasterInfoWithoutScheduleResponse addServices(int masterId, ServicesRequest servicesRequest, String uuid) {
+        LOGGER.debug("Service addService masterId,updateScheduleRequest,uuid {},{},{}", masterId, servicesRequest, uuid);
+        try {
+            Cookie cookie = responseProcessor.getCookie(uuid);
+            responseProcessor.checkAdminPermission(cookie.getUser());
+            Master master = masterDao.getById(masterId);
+            if (master == null) {
+                throw new ServerException(ErrorCodes.MASTER_ID_NOT_FOUND);
+            }
+            List<ServiceRequest> serviceRequests = servicesRequest.getServiceRequests();
+            List<Service> services = new ArrayList<>();
+            List<Service> masterServices = master.getService();
+            for (ServiceRequest serviceRequest : serviceRequests) {
 
-        Client newClient = new Client(new User(cookie.getUser().getId(), updateClientRequest.getFirstName(),
-                updateClientRequest.getLastName(),
-                updateClientRequest.getPatronymic(),
-                null,
-                updateClientRequest.getNewPassword(), null),
-                updateClientRequest.getEmail(),
-                updateClientRequest.getAddress(), updateClientRequest.getPhone());
-        Client client = clientDao.update(newClient);
-        return responseProcessor.getResponse(client);
+                Service service = serviceDao.getByName(serviceRequest.getName());
+                if (service == null) {
+                    service = new Service(serviceRequest.getName(), serviceRequest.getPrice(), serviceRequest.getDuration());
+                    service = serviceDao.insert(service);
+                }
+                if (!masterServices.contains(service)) {
+                    services.add(service);
+                }
+            }
+            Master updateMaster = masterDao.addServices(master, services);
+
+            return responseProcessor.getResponse(updateMaster, cookie.getUser());
+        } catch (Exception ex) {
+            LOGGER.info("Service can't addService {},{},{}", masterId, servicesRequest, uuid, ex);
+            throw ex;
+        }
     }
+
+
+    public ClientInfoResponse updateClient(UpdateClientRequest updateClientRequest, String uuid) {
+        LOGGER.debug("Service updateClient UpdateClientRequest,uuid {},{}", updateClientRequest, uuid);
+        try {
+            Cookie cookie = responseProcessor.getCookie(uuid);
+            if (!cookie.getUser().getPassword().equals(updateClientRequest.getOldPassword())) {
+                throw new ServerException(ErrorCodes.WRONG_PASSWORD);
+            }
+
+            Client newClient = new Client(new User(cookie.getUser().getId(), updateClientRequest.getFirstName(),
+                    updateClientRequest.getLastName(),
+                    updateClientRequest.getPatronymic(),
+                    null,
+                    updateClientRequest.getNewPassword(), null),
+                    updateClientRequest.getEmail(),
+                    updateClientRequest.getAddress(), updateClientRequest.getPhone());
+            Client client = clientDao.update(newClient);
+            return responseProcessor.getResponse(client);
+        } catch (Exception ex) {
+            LOGGER.info("Service can't updateClient {},{}", updateClientRequest, uuid, ex);
+            throw ex;
+        }
+    }
+
     private void deleteDaySchedule(List<DaySchedule> daySchedules) {
         for (DaySchedule daySchedule : daySchedules) {
             dayScheduleDao.delete(daySchedule);

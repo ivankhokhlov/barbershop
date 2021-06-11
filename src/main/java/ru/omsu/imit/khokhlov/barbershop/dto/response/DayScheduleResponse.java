@@ -1,15 +1,20 @@
 package ru.omsu.imit.khokhlov.barbershop.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 
 public class DayScheduleResponse {
     private LocalDate date;
+    private LocalTime timeStart;
+    private LocalTime timeEnd;
     private List<ReservationWithoutClientResponse> reservations;
 
-    public DayScheduleResponse(LocalDate date, List<ReservationWithoutClientResponse> reservations) {
+    public DayScheduleResponse(LocalDate date, LocalTime timeStart,
+                               LocalTime timeEnd, List<ReservationWithoutClientResponse> reservations) {
         this.date = date;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
         this.reservations = reservations;
     }
 
@@ -32,17 +37,19 @@ public class DayScheduleResponse {
         this.reservations = reservations;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DayScheduleResponse)) return false;
-        DayScheduleResponse that = (DayScheduleResponse) o;
-        return Objects.equals(getDate(), that.getDate()) &&
-                Objects.equals(getReservations(), that.getReservations());
+    public LocalTime getTimeStart() {
+        return timeStart;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getDate(), getReservations());
+    public void setTimeStart(LocalTime timeStart) {
+        this.timeStart = timeStart;
+    }
+
+    public LocalTime getTimeEnd() {
+        return timeEnd;
+    }
+
+    public void setTimeEnd(LocalTime timeEnd) {
+        this.timeEnd = timeEnd;
     }
 }
