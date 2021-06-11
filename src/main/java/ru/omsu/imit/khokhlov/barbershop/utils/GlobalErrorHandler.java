@@ -49,6 +49,10 @@ public class GlobalErrorHandler {
     @ResponseBody
     public RuntimeErrors handleRuntimeException(RuntimeException exc) {
         final RuntimeErrors error = new RuntimeErrors();
+        if (exc.getMessage().contains("Json")) {
+            error.getAllErrors().add("Json parsing error");
+            return error;
+        }
         error.getAllErrors().add(exc.getMessage());
         return error;
     }
