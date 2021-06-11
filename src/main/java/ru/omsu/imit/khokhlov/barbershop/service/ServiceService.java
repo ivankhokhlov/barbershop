@@ -55,7 +55,7 @@ public class ServiceService extends BaseService {
                     service = new Service(serviceRequest.getName(), serviceRequest.getPrice(), serviceRequest.getDuration());
                     service = serviceDao.insert(service);
                 }
-                if (!masterServices.contains(service)) {
+                if (masterServices.contains(service)) {
                     services.add(service);
                 }
             }

@@ -144,6 +144,7 @@ public class UpdateService extends BaseService {
                     services.add(service);
                 }
             }
+
             Master updateMaster = masterDao.addServices(master, services);
 
             return responseProcessor.getResponse(updateMaster, cookie.getUser());

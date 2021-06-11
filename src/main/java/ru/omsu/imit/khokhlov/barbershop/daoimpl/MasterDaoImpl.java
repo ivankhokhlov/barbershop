@@ -82,8 +82,9 @@ public class MasterDaoImpl extends BaseDaoImpl implements MasterDao {
         LOGGER.debug("DAO addServices master,services {},{}", master, services);
         try (SqlSession sqlSession = getSession()) {
             try {
-                for (Service service : master.getService()) {
+                for (Service service : services) {
                     getServiceMasterMapper(sqlSession).insert(service, master);
+                    master = getMasterMapper(sqlSession).getById(master.getUser().getId());
                 }
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't addServices master {} {}", master, ex);
@@ -100,9 +101,10 @@ public class MasterDaoImpl extends BaseDaoImpl implements MasterDao {
         LOGGER.debug("DAO deleteServices master,services {},{}", master, services);
         try (SqlSession sqlSession = getSession()) {
             try {
-                for (Service service : master.getService()) {
+                for (Service service : services) {
                     getServiceMasterMapper(sqlSession).deleteMasterFromService(service, master);
                 }
+                master = getMasterMapper(sqlSession).getById(master.getUser().getId());
             } catch (RuntimeException ex) {
                 LOGGER.info("Can't deleteServices master {} {}", master, ex);
                 sqlSession.rollback();

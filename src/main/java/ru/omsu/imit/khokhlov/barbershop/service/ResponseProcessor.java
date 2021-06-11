@@ -85,8 +85,9 @@ public class ResponseProcessor {
                     if (clientInReservation != null) {
                         if (userRequest.equals(clientInReservation.getUser()) || userRequest.getUserType() != UserType.CLIENT) {
                             ClientInfoResponse clientInfoResponse = getResponse(clientInReservation);
+                            List<ServiceResponse> serviceClientResponses = getResponse(reservation.getServices());
                             ReservationResponse reservationResponse = new ReservationResponse(timeStart,
-                                    timeEnd, clientInfoResponse, serviceResponses);
+                                    timeEnd, clientInfoResponse, serviceClientResponses);
                             receptionResponses.add(reservationResponse);
                         } else {
                             receptionResponses.add(new ReservationWithoutClientResponse(timeStart,
