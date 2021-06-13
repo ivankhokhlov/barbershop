@@ -18,7 +18,7 @@ public class CookieProcessor {
     }
     public static Cookie getCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String cookieName = "JAVASESSIONID";
+        String cookieName = "SESSIONID";
         Cookie cookie = null;
         if (cookies == null) {
             throw new ServerException(ErrorCodes.INVALID_COOKIE);
@@ -41,7 +41,7 @@ public class CookieProcessor {
     }
     public static Cookie getCookieWithoutChecks(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
-        String cookieName = "JAVASESSIONID";
+        String cookieName = "SESSIONID";
         Cookie cookie = null;
         if (cookies != null) {
 

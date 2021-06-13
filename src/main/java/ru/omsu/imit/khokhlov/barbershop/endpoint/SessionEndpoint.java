@@ -27,7 +27,7 @@ public class SessionEndpoint {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         TransferResponseAndCookie transferResponseAndCookie=service.login(loginRequest);
-        response.addCookie(new Cookie("JAVASESSIONID",transferResponseAndCookie.getCookie()));
+        response.addCookie(new Cookie("SESSIONID", transferResponseAndCookie.getCookie()));
         return transferResponseAndCookie.getResponse();
     }
     @DeleteMapping

@@ -43,7 +43,7 @@ public class ClientEndpoint {
                 new LoginRequest(registerClientRequest.getLogin()
                         , registerClientRequest.getPassword()));
 
-        response.addCookie(new Cookie("JAVASESSIONID", transferResponseAndCookie.getCookie()));
+        response.addCookie(new Cookie("SESSIONID", transferResponseAndCookie.getCookie()));
         return transferResponseAndCookie.getResponse();
     }
 
